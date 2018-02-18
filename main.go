@@ -5,42 +5,10 @@ import (
 	"log"
 	"time"
 
+	"github.com/ishuah/bifrost/screen"
 	"github.com/nsf/termbox-go"
 	"github.com/tarm/serial"
 )
-
-type Screen struct {
-	buffer              []string
-	width, height, x, y int
-}
-
-func (s *Screen) Write(content string) {
-	defer termbox.Flush()
-	s.buffer = append(s.buffer, content)
-	lines := []string{content}
-	if s.y > s.height {
-		s.y = 0
-		s.x = 0
-		lines = s.buffer[len(s.buffer)-s.height:]
-		termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
-	}
-	for _, line := range lines {
-		for _, char := range line {
-			if s.x > s.width {
-				s.x = 0
-				s.y++
-			}
-			// new line character
-			if char == 10 {
-				s.x = 0
-				s.y++
-				continue
-			}
-			termbox.SetCell(s.x, s.y, char, termbox.ColorDefault, termbox.ColorDefault)
-			s.x++
-		}
-	}
-}
 
 func main() {
 	err := termbox.Init()
@@ -49,8 +17,8 @@ func main() {
 	}
 
 	defer termbox.Close()
-	width, height := termbox.Size()
-	screen := Screen{width: width, height: height, y: 0}
+
+	screen := screen.NewScreen()
 
 	c := &serial.Config{Name: "/dev/tty.usbserial", Baud: 115200, ReadTimeout: 10 * time.Millisecond}
 	port, err := serial.OpenPort(c)
@@ -82,11 +50,15 @@ func main() {
 				if ev.Key == termbox.KeySpace {
 					char = ' '
 				}
-				screen.Write(string(char))
+				screen.AddPromptChar(char)
 			} else {
 				switch ev.Key {
 				case termbox.KeyEsc:
 					return
+				case termbox.KeyEnter:
+					port.Write([]byte(string(screen.PromptInput())))
+				case termbox.KeyBackspace2:
+					screen.DeletePromptChar()
 				}
 			}
 		}
