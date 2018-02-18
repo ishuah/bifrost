@@ -50,15 +50,15 @@ func main() {
 				if ev.Key == termbox.KeySpace {
 					char = ' '
 				}
-				screen.AddPromptChar(char)
+				screen.AddInputChar(char)
 			} else {
 				switch ev.Key {
 				case termbox.KeyEsc:
 					return
 				case termbox.KeyEnter:
-					port.Write([]byte(string(screen.PromptInput())))
+					port.Write([]byte(string(screen.GetInput())))
 				case termbox.KeyBackspace2:
-					screen.DeletePromptChar()
+					screen.DeleteInputChar()
 				}
 			}
 		}

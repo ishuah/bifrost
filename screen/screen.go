@@ -5,9 +5,11 @@ import (
 )
 
 type Screen struct {
-	buffer              []string
-	width, height, x, y int
-	input               []rune
+	buffer           []string
+	width, height    int
+	x, y             int
+	cursorX, cursorY int
+	input            []rune
 }
 
 func NewScreen() Screen {
@@ -49,39 +51,46 @@ func (s *Screen) Write(line string) {
 	}
 }
 
-func (s *Screen) updatePrompt() {
-	promptX := s.x
-	promptY := s.y
+func (s *Screen) updateInput() {
+	inputX := s.x
+	inputY := s.y
 	defer termbox.Flush()
 	for x := 0; x <= len(s.input)+1; x++ {
-		termbox.SetCell(x+promptX, promptY, ' ', termbox.ColorDefault, termbox.ColorDefault)
+		termbox.SetCell(x+inputX, inputY, ' ', termbox.ColorDefault, termbox.ColorDefault)
 	}
 	for _, c := range s.input {
-		termbox.SetCell(promptX, promptY, c, termbox.ColorDefault, termbox.ColorDefault)
-		promptX++
+		termbox.SetCell(inputX, inputY, c, termbox.ColorDefault, termbox.ColorDefault)
+		inputX++
 	}
-	termbox.SetCell(promptX, promptY, ' ', termbox.ColorWhite, termbox.ColorWhite)
+	s.cursorX = inputX
+	s.cursorY = inputY
+	s.drawCursor()
 }
 
-func (s *Screen) clearPrompt() {
+func (s *Screen) drawCursor() {
+	termbox.SetCell(s.cursorX, s.cursorY, ' ', termbox.ColorBlack, termbox.ColorWhite)
+	termbox.Flush()
+}
+
+func (s *Screen) clearInput() {
 	s.input = s.input[:0]
 }
 
-func (s *Screen) AddPromptChar(char rune) {
+func (s *Screen) AddInputChar(char rune) {
 	s.input = append(s.input, char)
-	s.updatePrompt()
+	s.updateInput()
 }
 
-func (s *Screen) DeletePromptChar() {
+func (s *Screen) DeleteInputChar() {
 	if len(s.input) == 0 {
 		return
 	}
 	s.input = s.input[:len(s.input)-1]
-	s.updatePrompt()
+	s.updateInput()
 }
 
-func (s *Screen) PromptInput() []rune {
-	defer s.clearPrompt()
+func (s *Screen) GetInput() []rune {
+	defer s.clearInput()
 	s.input = append(s.input, '\r')
 	return s.input
 }
