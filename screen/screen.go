@@ -5,9 +5,9 @@ import (
 )
 
 type Screen struct {
-	buffer                                []string
-	width, height, x, y, promptX, promptY int
-	input                                 []rune
+	buffer              []string
+	width, height, x, y int
+	input               []rune
 }
 
 func NewScreen() Screen {
@@ -30,6 +30,7 @@ func (s *Screen) write(line string) {
 		termbox.SetCell(s.x, s.y, char, termbox.ColorDefault, termbox.ColorDefault)
 		s.x++
 	}
+	termbox.SetCell(s.x, s.y, ' ', termbox.ColorWhite, termbox.ColorWhite)
 }
 
 func (s *Screen) Write(line string) {
@@ -49,16 +50,17 @@ func (s *Screen) Write(line string) {
 }
 
 func (s *Screen) updatePrompt() {
-	s.promptX = s.x
-	s.promptY = s.y
+	promptX := s.x
+	promptY := s.y
 	defer termbox.Flush()
 	for x := 0; x <= len(s.input)+1; x++ {
-		termbox.SetCell(x+s.promptX, s.promptY, ' ', termbox.ColorDefault, termbox.ColorDefault)
+		termbox.SetCell(x+promptX, promptY, ' ', termbox.ColorDefault, termbox.ColorDefault)
 	}
 	for _, c := range s.input {
-		termbox.SetCell(s.promptX, s.promptY, c, termbox.ColorDefault, termbox.ColorDefault)
-		s.promptX++
+		termbox.SetCell(promptX, promptY, c, termbox.ColorDefault, termbox.ColorDefault)
+		promptX++
 	}
+	termbox.SetCell(promptX, promptY, ' ', termbox.ColorWhite, termbox.ColorWhite)
 }
 
 func (s *Screen) clearPrompt() {
