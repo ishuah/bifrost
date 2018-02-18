@@ -16,7 +16,6 @@ func NewScreen() Screen {
 }
 
 func (s *Screen) write(line string) {
-	defer termbox.Flush()
 	for _, char := range line {
 		if s.x > s.width {
 			s.x = 0
@@ -34,12 +33,14 @@ func (s *Screen) write(line string) {
 }
 
 func (s *Screen) Write(line string) {
+	defer termbox.Flush()
 	s.buffer = append(s.buffer, line)
 	lines := []string{line}
 	if s.y > s.height {
 		s.y = 0
 		s.x = 0
-		lines = s.buffer[len(s.buffer)-s.height:]
+		scope := (len(s.buffer) - s.height) + 1
+		lines = s.buffer[scope:]
 		termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 	}
 	for _, line := range lines {
@@ -70,6 +71,9 @@ func (s *Screen) AddPromptChar(char rune) {
 }
 
 func (s *Screen) DeletePromptChar() {
+	if len(s.input) == 0 {
+		return
+	}
 	s.input = s.input[:len(s.input)-1]
 	s.updatePrompt()
 }

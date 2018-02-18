@@ -20,7 +20,7 @@ func main() {
 
 	screen := screen.NewScreen()
 
-	c := &serial.Config{Name: "/dev/tty.usbserial", Baud: 115200, ReadTimeout: 10 * time.Millisecond}
+	c := &serial.Config{Name: "/dev/tty.usbserial", Baud: 115200, ReadTimeout: 500 * time.Nanosecond}
 	port, err := serial.OpenPort(c)
 
 	if err != nil {
