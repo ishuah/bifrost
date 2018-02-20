@@ -34,7 +34,10 @@ func main() {
 
 	go func() {
 		for {
-			response, _ := portReader.ReadBytes('\n')
+			response, err := portReader.ReadBytes('\n')
+			if err != nil && err.Error() != "EOF" {
+				log.Fatal(err)
+			}
 			if len(response) > 0 {
 				screen.Write(string(response))
 			}
@@ -50,13 +53,13 @@ func main() {
 				if ev.Key == termbox.KeySpace {
 					char = ' '
 				}
-				screen.AddInputChar(char)
+				screen.InsertInputChar(char)
 			} else {
 				switch ev.Key {
 				case termbox.KeyEsc:
 					return
 				case termbox.KeyEnter:
-					port.Write([]byte(string(screen.GetInput())))
+					port.Write([]byte(string(screen.ReturnInput())))
 				case termbox.KeyBackspace2:
 					screen.DeleteInputChar()
 				}

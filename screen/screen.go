@@ -1,96 +1,48 @@
 package screen
 
 import (
+	"github.com/ishuah/bifrost/command"
 	termbox "github.com/nsf/termbox-go"
 )
 
 type Screen struct {
-	buffer           []string
-	width, height    int
-	x, y             int
-	cursorX, cursorY int
-	input            []rune
+	buffer        []string
+	width, height int
+	prompt        *command.Prompt
 }
 
 func NewScreen() Screen {
 	width, height := termbox.Size()
-	return Screen{width: width, height: height}
-}
-
-func (s *Screen) write(line string) {
-	for _, char := range line {
-		if s.x > s.width {
-			s.x = 0
-			s.y++
-		}
-		// new line character
-		if char == 10 {
-			s.x = 0
-			s.y++
-			continue
-		}
-		termbox.SetCell(s.x, s.y, char, termbox.ColorDefault, termbox.ColorDefault)
-		s.x++
-	}
-	termbox.SetCell(s.x, s.y, ' ', termbox.ColorWhite, termbox.ColorWhite)
+	prompt := command.NewPrompt(width)
+	return Screen{width: width, height: height, prompt: &prompt}
 }
 
 func (s *Screen) Write(line string) {
 	defer termbox.Flush()
 	s.buffer = append(s.buffer, line)
 	lines := []string{line}
-	if s.y > s.height {
-		s.y = 0
-		s.x = 0
+	_, y := s.prompt.GetPosition()
+	if y > s.height {
+		s.prompt.Reset()
 		scope := (len(s.buffer) - s.height) + 1
 		lines = s.buffer[scope:]
 		termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 	}
 	for _, line := range lines {
-		s.write(line)
+		s.prompt.Write(line)
 	}
+	s.prompt.UpdatePosition()
+	s.prompt.Draw()
 }
 
-func (s *Screen) updateInput() {
-	inputX := s.x
-	inputY := s.y
-	defer termbox.Flush()
-	for x := 0; x <= len(s.input)+1; x++ {
-		termbox.SetCell(x+inputX, inputY, ' ', termbox.ColorDefault, termbox.ColorDefault)
-	}
-	for _, c := range s.input {
-		termbox.SetCell(inputX, inputY, c, termbox.ColorDefault, termbox.ColorDefault)
-		inputX++
-	}
-	s.cursorX = inputX
-	s.cursorY = inputY
-	s.drawCursor()
-}
-
-func (s *Screen) drawCursor() {
-	termbox.SetCell(s.cursorX, s.cursorY, ' ', termbox.ColorBlack, termbox.ColorWhite)
-	termbox.Flush()
-}
-
-func (s *Screen) clearInput() {
-	s.input = s.input[:0]
-}
-
-func (s *Screen) AddInputChar(char rune) {
-	s.input = append(s.input, char)
-	s.updateInput()
+func (s *Screen) InsertInputChar(char rune) {
+	s.prompt.InsertInputChar(char)
 }
 
 func (s *Screen) DeleteInputChar() {
-	if len(s.input) == 0 {
-		return
-	}
-	s.input = s.input[:len(s.input)-1]
-	s.updateInput()
+	s.prompt.DeleteInputChar()
 }
 
-func (s *Screen) GetInput() []rune {
-	defer s.clearInput()
-	s.input = append(s.input, '\r')
-	return s.input
+func (s *Screen) ReturnInput() []rune {
+	return s.prompt.ReturnInput()
 }
