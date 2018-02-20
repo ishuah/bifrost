@@ -1,4 +1,3 @@
-# bifrost
-🌈 burning rainbow bridge for serial port communication
+# 🌈 bifrost
 
 Bifrost is a tiny terminal emulator for serial port communication.
