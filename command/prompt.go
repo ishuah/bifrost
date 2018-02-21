@@ -64,8 +64,12 @@ func (p *Prompt) draw() {
 	for i, char := range p.input {
 		termbox.SetCell(i+p.x, p.y, char, termbox.ColorDefault, termbox.ColorDefault)
 	}
+	char := ' '
+	if p.cursorIndex < len(p.input) {
+		char = p.input[p.cursorIndex]
+	}
 	// draw the cursor
-	termbox.SetCell(p.cursorIndex+p.x, p.y, ' ', termbox.ColorBlack, termbox.ColorWhite)
+	termbox.SetCell(p.cursorIndex+p.x, p.y, char, termbox.ColorBlack, termbox.ColorWhite)
 }
 
 func (p *Prompt) InsertInputChar(char rune) {
