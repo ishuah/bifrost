@@ -93,3 +93,11 @@ func (p *Prompt) ReturnInput() []rune {
 	p.cursorIndex = 0
 	return input
 }
+
+func (p *Prompt) ClearInput() []rune {
+	termbox.SetCell(p.cursorIndex+p.x, p.y, ' ', termbox.ColorDefault, termbox.ColorDefault)
+	input := p.input
+	p.input = p.input[:0]
+	p.cursorIndex = 0
+	return input
+}

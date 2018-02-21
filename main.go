@@ -34,10 +34,8 @@ func main() {
 
 	go func() {
 		for {
-			response, err := portReader.ReadBytes('\n')
-			if err != nil && err.Error() != "EOF" {
-				log.Fatal(err)
-			}
+			response, _ := portReader.ReadBytes('\n')
+
 			if len(response) > 0 {
 				screen.Write(string(response))
 			}
@@ -58,8 +56,17 @@ func main() {
 				switch ev.Key {
 				case termbox.KeyEsc:
 					return
+				case termbox.KeyCtrlC:
+					input := screen.ClearInput()
+					// Print command on screen
+					if len(input) > 0 {
+						port.Write([]byte(string(input)))
+					}
+					port.Write([]byte("\x03"))
 				case termbox.KeyEnter:
 					port.Write([]byte(string(screen.ReturnInput())))
+				case termbox.KeyBackspace:
+					screen.DeleteInputChar()
 				case termbox.KeyBackspace2:
 					screen.DeleteInputChar()
 				case termbox.KeyArrowLeft:

@@ -53,3 +53,7 @@ func (s *Screen) MoveCursorLeft() {
 func (s *Screen) MoveCursorRight() {
 	s.prompt.MoveCursor(1)
 }
+
+func (s *Screen) ClearInput() []rune {
+	return s.prompt.ClearInput()
+}
