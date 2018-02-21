@@ -31,8 +31,7 @@ func (s *Screen) Write(line string) {
 	for _, line := range lines {
 		s.prompt.Write(line)
 	}
-	s.prompt.UpdatePosition()
-	s.prompt.Draw()
+	s.prompt.ResetCursor()
 }
 
 func (s *Screen) InsertInputChar(char rune) {
@@ -45,4 +44,12 @@ func (s *Screen) DeleteInputChar() {
 
 func (s *Screen) ReturnInput() []rune {
 	return s.prompt.ReturnInput()
+}
+
+func (s *Screen) MoveCursorLeft() {
+	s.prompt.MoveCursor(-1)
+}
+
+func (s *Screen) MoveCursorRight() {
+	s.prompt.MoveCursor(1)
 }

@@ -62,6 +62,10 @@ func main() {
 					port.Write([]byte(string(screen.ReturnInput())))
 				case termbox.KeyBackspace2:
 					screen.DeleteInputChar()
+				case termbox.KeyArrowLeft:
+					screen.MoveCursorLeft()
+				case termbox.KeyArrowRight:
+					screen.MoveCursorRight()
 				}
 			}
 		}
