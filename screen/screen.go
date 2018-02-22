@@ -1,59 +1,51 @@
 package screen
 
 import (
-	"github.com/ishuah/bifrost/command"
 	termbox "github.com/nsf/termbox-go"
 )
 
 type Screen struct {
 	buffer        []string
 	width, height int
-	prompt        *command.Prompt
+	x, y          int
 }
 
 func NewScreen() Screen {
 	width, height := termbox.Size()
-	prompt := command.NewPrompt(width)
-	return Screen{width: width, height: height, prompt: &prompt}
+	return Screen{width: width, height: height}
+}
+
+func (s *Screen) write(line string) {
+	for _, char := range line {
+		if s.x > s.width {
+			s.x = 0
+			s.y++
+		}
+		// new line character
+		if char == 10 {
+			s.x = 0
+			s.y++
+			continue
+		}
+		termbox.SetCell(s.x, s.y, char, termbox.ColorDefault, termbox.ColorDefault)
+		s.x++
+	}
 }
 
 func (s *Screen) Write(line string) {
 	defer termbox.Flush()
 	s.buffer = append(s.buffer, line)
 	lines := []string{line}
-	_, y := s.prompt.GetPosition()
-	if y > s.height {
-		s.prompt.Reset()
+
+	if s.y > s.height {
+		s.x = 0
+		s.y = 0
 		scope := (len(s.buffer) - s.height) + 1
 		lines = s.buffer[scope:]
 		termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 	}
 	for _, line := range lines {
-		s.prompt.Write(line)
+		s.write(line)
 	}
-	s.prompt.ResetCursor()
-}
-
-func (s *Screen) InsertInputChar(char rune) {
-	s.prompt.InsertInputChar(char)
-}
-
-func (s *Screen) DeleteInputChar() {
-	s.prompt.DeleteInputChar()
-}
-
-func (s *Screen) ReturnInput() []rune {
-	return s.prompt.ReturnInput()
-}
-
-func (s *Screen) MoveCursorLeft() {
-	s.prompt.MoveCursor(-1)
-}
-
-func (s *Screen) MoveCursorRight() {
-	s.prompt.MoveCursor(1)
-}
-
-func (s *Screen) ClearInput() []rune {
-	return s.prompt.ClearInput()
+	termbox.SetCell(s.x, s.y, ' ', termbox.ColorBlack, termbox.ColorWhite)
 }

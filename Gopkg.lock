@@ -2,6 +2,18 @@
 
 
 [[projects]]
+  name = "github.com/mattn/go-runewidth"
+  packages = ["."]
+  revision = "9e777a8366cce605130a531d2cd6363d07ad7317"
+  version = "v0.0.2"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/nsf/termbox-go"
+  packages = ["."]
+  revision = "88b7b944be8bc8d8ec6195fca97c5869ba20f99d"
+
+[[projects]]
   branch = "master"
   name = "github.com/tarm/serial"
   packages = ["."]
@@ -16,6 +28,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f9a6c4dc440e8e3650be246784e2d7235f7da18d7cda545e30bdaca21f549100"
+  inputs-digest = "811244a9de2523a3fcd73ac37feae5926d249af4a6fd63f8d0140036b491f570"
   solver-name = "gps-cdcl"
   solver-version = 1

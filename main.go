@@ -28,8 +28,6 @@ func main() {
 	}
 
 	screen.Write("Bifrost alpha build\n")
-	port.Write([]byte("\r"))
-
 	portReader := bufio.NewReader(port)
 
 	go func() {
@@ -51,28 +49,31 @@ func main() {
 				if ev.Key == termbox.KeySpace {
 					char = ' '
 				}
-				screen.InsertInputChar(char)
+				port.Write([]byte(string(char)))
 			} else {
 				switch ev.Key {
 				case termbox.KeyEsc:
+					port.Write([]byte{'\x1b'})
+				case termbox.KeyCtrlBackslash:
 					return
+				case termbox.KeyTab:
+					port.Write([]byte{'\x09'})
 				case termbox.KeyCtrlC:
-					input := screen.ClearInput()
-					// Print command on screen
-					if len(input) > 0 {
-						port.Write([]byte(string(input)))
-					}
-					port.Write([]byte("\x03"))
+					port.Write([]byte{'\x03'})
 				case termbox.KeyEnter:
-					port.Write([]byte(string(screen.ReturnInput())))
+					port.Write([]byte{'\r'})
 				case termbox.KeyBackspace:
-					screen.DeleteInputChar()
+					port.Write([]byte{'\x7F'})
 				case termbox.KeyBackspace2:
-					screen.DeleteInputChar()
+					port.Write([]byte{'\x7F'})
 				case termbox.KeyArrowLeft:
-					screen.MoveCursorLeft()
+					port.Write([]byte{'\x1b', '[', 'D'})
 				case termbox.KeyArrowRight:
-					screen.MoveCursorRight()
+					port.Write([]byte{'\x1b', '[', 'C'})
+				case termbox.KeyArrowUp:
+					port.Write([]byte{'\x1b', '[', 'A'})
+				case termbox.KeyArrowDown:
+					port.Write([]byte{'\x1b', '[', 'B'})
 				}
 			}
 		}
