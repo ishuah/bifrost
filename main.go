@@ -20,12 +20,14 @@ func main() {
 
 	screen := screen.NewScreen()
 
-	c := &serial.Config{Name: "/dev/tty.usbserial", Baud: 115200, ReadTimeout: 500 * time.Nanosecond}
+	c := &serial.Config{Name: "/dev/tty.usbserial", Baud: 115200, ReadTimeout: time.Nanosecond}
 	port, err := serial.OpenPort(c)
 
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	buf := make(chan []byte)
 
 	screen.Write("Bifrost alpha build\n")
 	portReader := bufio.NewReader(port)
@@ -35,6 +37,16 @@ func main() {
 			response, _ := portReader.ReadBytes('\n')
 
 			if len(response) > 0 {
+				//screen.Write(string(response))
+				buf <- response
+			}
+		}
+	}()
+
+	go func() {
+		for {
+			select {
+			case response := <-buf:
 				screen.Write(string(response))
 			}
 		}

@@ -1,6 +1,7 @@
 package screen
 
 import (
+	"github.com/ishuah/ansi"
 	termbox "github.com/nsf/termbox-go"
 )
 
@@ -8,28 +9,120 @@ type Screen struct {
 	buffer        []string
 	width, height int
 	x, y          int
+	fg            termbox.Attribute
 }
 
 func NewScreen() Screen {
 	width, height := termbox.Size()
-	return Screen{width: width, height: height}
+	return Screen{width: width, height: height, fg: termbox.ColorDefault}
 }
 
 func (s *Screen) write(line string) {
-	for _, char := range line {
-		if s.x > s.width {
-			s.x = 0
-			s.y++
+	var lex ansi.Lexer
+	lex.Init([]byte(line))
+
+	for item := lex.NextItem(); item.T != ansi.EOF; item = lex.NextItem() {
+		switch item.T {
+		case ansi.ControlSequence:
+			seq, _ := ansi.ParseControlSequence(item.Value)
+			switch seq.Prefix {
+			case ansi.ControlSequenceIntroducer:
+				switch seq.Command {
+				case ansi.SelectGraphicRendition:
+					s.graphicHandler(seq.Params)
+				case ansi.CursorPosition:
+					s.cursorHandler(seq.Params)
+				case ansi.EraseInDisplay, ansi.EraseInLine:
+					s.eraseHandler(seq.Command, seq.Params)
+				}
+			}
+		case ansi.RawBytes:
+			for _, char := range item.Value {
+				if s.x > s.width {
+					s.x = 0
+					s.y++
+				}
+
+				switch char {
+				case 7:
+					continue
+				case 8:
+					s.x--
+				case 10:
+					s.x = 0
+					s.y++
+				case 13:
+					s.x = 0
+				default:
+					termbox.SetCell(s.x, s.y, rune(char), s.fg, termbox.ColorDefault)
+					s.x++
+				}
+			}
 		}
-		// new line character
-		if char == 10 {
-			s.x = 0
-			s.y++
-			continue
-		}
-		termbox.SetCell(s.x, s.y, char, termbox.ColorDefault, termbox.ColorDefault)
-		s.x++
+
 	}
+}
+
+func (s *Screen) eraseHandler(command byte, params []int) {
+	switch command {
+	case ansi.EraseInDisplay:
+		for i := s.y; i <= s.height; i++ {
+			for j := s.x; j <= s.width; j++ {
+				termbox.SetCell(j, i, ' ', termbox.ColorDefault, termbox.ColorDefault)
+			}
+		}
+	case ansi.EraseInLine:
+		for j := s.x; j <= s.width; j++ {
+			termbox.SetCell(j, s.y, ' ', termbox.ColorDefault, termbox.ColorDefault)
+		}
+	}
+}
+
+func (s *Screen) graphicHandler(params []int) {
+	switch params[0] {
+	case 0:
+		s.fg = termbox.ColorDefault
+	case 1:
+		s.fg = termbox.AttrBold
+	case 4:
+		s.fg = termbox.AttrUnderline
+	case 7:
+		s.fg = termbox.AttrReverse
+	}
+
+	if len(params) == 1 {
+		return
+	}
+
+	switch params[1] {
+	case 30:
+		s.fg |= termbox.ColorBlack
+	case 31:
+		s.fg |= termbox.ColorRed
+	case 32:
+		s.fg |= termbox.ColorGreen
+	case 33:
+		s.fg |= termbox.ColorYellow
+	case 34:
+		s.fg |= termbox.ColorBlue
+	case 35:
+		s.fg |= termbox.ColorMagenta
+	case 36:
+		s.fg |= termbox.ColorCyan
+	case 37:
+		s.fg |= termbox.ColorWhite
+	}
+}
+
+func (s *Screen) cursorHandler(params []int) {
+	if len(params) == 0 {
+		s.x = 0
+		s.y = 0
+		return
+	}
+
+	s.x = params[1] - 1
+	s.y = params[0] - 1
 }
 
 func (s *Screen) Write(line string) {
@@ -47,5 +140,5 @@ func (s *Screen) Write(line string) {
 	for _, line := range lines {
 		s.write(line)
 	}
-	termbox.SetCell(s.x, s.y, ' ', termbox.ColorBlack, termbox.ColorWhite)
+	termbox.SetCursor(s.x, s.y)
 }
