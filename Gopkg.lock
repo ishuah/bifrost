@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/ishuah/ansi"
+  packages = ["."]
+  revision = "562de824e85b7758d99aec526b65f9b807f37051"
+
+[[projects]]
   name = "github.com/mattn/go-runewidth"
   packages = ["."]
   revision = "9e777a8366cce605130a531d2cd6363d07ad7317"
@@ -28,6 +34,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "811244a9de2523a3fcd73ac37feae5926d249af4a6fd63f8d0140036b491f570"
+  inputs-digest = "950d2c8438b0235ee23a70c07b2dbf4c1a9dc14ca704cc8a282244aa165d3771"
   solver-name = "gps-cdcl"
   solver-version = 1
