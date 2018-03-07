@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"log"
 	"time"
 
@@ -11,6 +12,9 @@ import (
 )
 
 func main() {
+	name := flag.String("name", "/dev/tty.usbserial", "serial device port")
+	baud := flag.Int("baud", 115200, "baud rate")
+
 	err := termbox.Init()
 	if err != nil {
 		log.Fatal(err)
@@ -20,7 +24,7 @@ func main() {
 
 	screen := screen.NewScreen()
 
-	c := &serial.Config{Name: "/dev/tty.usbserial", Baud: 115200, ReadTimeout: time.Nanosecond}
+	c := &serial.Config{Name: *name, Baud: *baud, ReadTimeout: time.Nanosecond}
 	port, err := serial.OpenPort(c)
 
 	if err != nil {
@@ -35,9 +39,7 @@ func main() {
 	go func() {
 		for {
 			response, _ := portReader.ReadBytes('\n')
-
 			if len(response) > 0 {
-				//screen.Write(string(response))
 				buf <- response
 			}
 		}
