@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"flag"
+	"fmt"
 	"log"
 	"time"
 
@@ -10,6 +11,26 @@ import (
 	"github.com/nsf/termbox-go"
 	"github.com/tarm/serial"
 )
+
+const version = "v0.1.20"
+
+func bufferedReader(portReader *bufio.Reader, buf chan []byte) {
+	for {
+		response, _ := portReader.ReadBytes('\n')
+		if len(response) > 0 {
+			buf <- response
+		}
+	}
+}
+
+func bufferedWriter(screen screen.Screen, buf chan []byte) {
+	for {
+		select {
+		case response := <-buf:
+			screen.Write(string(response))
+		}
+	}
+}
 
 func main() {
 	name := flag.String("name", "/dev/tty.usbserial", "serial device port")
@@ -31,28 +52,17 @@ func main() {
 		log.Fatal(err)
 	}
 
-	buf := make(chan []byte)
-
-	screen.Write("Bifrost alpha build\n")
 	portReader := bufio.NewReader(port)
 
-	go func() {
-		for {
-			response, _ := portReader.ReadBytes('\n')
-			if len(response) > 0 {
-				buf <- response
-			}
-		}
-	}()
+	// Welcome message
+	screen.Write(fmt.Sprintf("\nBifrost %s\n\n", version))
+	screen.Write("Options:\n")
+	screen.Write(fmt.Sprintf("\t\tPort: %s\n\t\tBaud rate: %d\n\n", *name, *baud))
+	screen.Write("Press Ctrl+\\ to exit\n\n")
 
-	go func() {
-		for {
-			select {
-			case response := <-buf:
-				screen.Write(string(response))
-			}
-		}
-	}()
+	buf := make(chan []byte)
+	go bufferedReader(portReader, buf)
+	go bufferedWriter(screen, buf)
 
 	for {
 		ev := termbox.PollEvent()
