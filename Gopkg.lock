@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/ishuah/ansi"
   packages = ["."]
-  revision = "562de824e85b7758d99aec526b65f9b807f37051"
+  revision = "2db28c9ace5104a4e9ad151099de6452c96832e5"
 
 [[projects]]
   name = "github.com/mattn/go-runewidth"

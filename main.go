@@ -12,7 +12,30 @@ import (
 	"github.com/tarm/serial"
 )
 
-const version = "v0.1.20"
+const version = "v0.1.20-rc1"
+
+var header = fmt.Sprintf("\nBifrost %s\n", version)
+var helpText = fmt.Sprintf(`%s
+Bifrost is a tiny terminal emulator for serial port communication.
+
+    Usage:
+	  bifrost [flags]
+	  
+    Flags:
+      -port-path	Name/path of the serial port
+      -baud		The baud rate to use on the connection
+      -help		This help message
+	`, header)
+
+func welcomeMessage(portPath string, baud int) string {
+	return fmt.Sprintf(`%s
+Options:
+    Port:		%s
+    Baud rate:	%d
+
+Press Ctrl+\ to exit
+		`, header, portPath, baud)
+}
 
 func bufferedReader(portReader *bufio.Reader, buf chan []byte) {
 	for {
@@ -33,8 +56,18 @@ func bufferedWriter(screen screen.Screen, buf chan []byte) {
 }
 
 func main() {
-	name := flag.String("name", "/dev/tty.usbserial", "serial device port")
-	baud := flag.Int("baud", 115200, "baud rate")
+	var portPath string
+	var baud int
+	var help bool
+	flag.StringVar(&portPath, "port-path", "/dev/tty.usbserial", "Name/path of the serial port")
+	flag.IntVar(&baud, "baud", 115200, "The baud rate to use on the connection")
+	flag.BoolVar(&help, "help", false, "A brief help message")
+	flag.Parse()
+
+	if help {
+		fmt.Println(helpText)
+		return
+	}
 
 	err := termbox.Init()
 	if err != nil {
@@ -45,7 +78,7 @@ func main() {
 
 	screen := screen.NewScreen()
 
-	c := &serial.Config{Name: *name, Baud: *baud, ReadTimeout: time.Nanosecond}
+	c := &serial.Config{Name: portPath, Baud: baud, ReadTimeout: time.Nanosecond}
 	port, err := serial.OpenPort(c)
 
 	if err != nil {
@@ -55,10 +88,7 @@ func main() {
 	portReader := bufio.NewReader(port)
 
 	// Welcome message
-	screen.Write(fmt.Sprintf("\nBifrost %s\n\n", version))
-	screen.Write("Options:\n")
-	screen.Write(fmt.Sprintf("\t\tPort: %s\n\t\tBaud rate: %d\n\n", *name, *baud))
-	screen.Write("Press Ctrl+\\ to exit\n\n")
+	screen.Write(welcomeMessage(portPath, baud))
 
 	buf := make(chan []byte)
 	go bufferedReader(portReader, buf)

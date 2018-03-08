@@ -30,8 +30,9 @@ func (s *Screen) write(line string) {
 				switch seq.Command {
 				case ansi.SelectGraphicRendition:
 					s.graphicHandler(seq.Params)
-				case ansi.CursorPosition:
-					s.cursorHandler(seq.Params)
+				case ansi.CursorPosition, ansi.CursorUp,
+					ansi.CursorDown, ansi.CursorForward, ansi.CursorBack:
+					s.cursorHandler(seq.Command, seq.Params)
 				case ansi.EraseInDisplay, ansi.EraseInLine:
 					s.eraseHandler(seq.Command, seq.Params)
 				}
@@ -59,7 +60,6 @@ func (s *Screen) write(line string) {
 				}
 			}
 		}
-
 	}
 }
 
@@ -114,15 +114,41 @@ func (s *Screen) graphicHandler(params []int) {
 	}
 }
 
-func (s *Screen) cursorHandler(params []int) {
-	if len(params) == 0 {
-		s.x = 0
-		s.y = 0
-		return
+func (s *Screen) cursorHandler(command byte, params []int) {
+	n, m := 1, 1
+	if len(params) > 0 {
+		n = params[0]
 	}
 
-	s.x = params[1] - 1
-	s.y = params[0] - 1
+	if len(params) > 1 {
+		m = params[1]
+	}
+
+	switch command {
+	case ansi.CursorPosition:
+		s.x = m - 1
+		s.y = n - 1
+	case ansi.CursorUp:
+		s.y = s.y - n
+		if s.y < 0 {
+			s.y = 0
+		}
+	case ansi.CursorDown:
+		s.y = s.y + n
+		if s.y > s.height {
+			s.y = s.height
+		}
+	case ansi.CursorForward:
+		s.x = s.x + n
+		if s.x > s.width {
+			s.x = s.width
+		}
+	case ansi.CursorBack:
+		s.x = s.x - n
+		if s.x < 0 {
+			s.x = 0
+		}
+	}
 }
 
 func (s *Screen) Write(line string) {
