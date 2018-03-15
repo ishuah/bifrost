@@ -66,9 +66,17 @@ func (s *Screen) write(line string) {
 func (s *Screen) eraseHandler(command byte, params []int) {
 	switch command {
 	case ansi.EraseInDisplay:
+		// Erase characters starting from the cursor to the end of screen
 		for i := s.y; i <= s.height; i++ {
-			for j := s.x; j <= s.width; j++ {
+			// start from column 0 unless i is cursor row, then start from s.x so as
+			// not to delete the cursor prompt and/or input
+			j := 0
+			if i == s.y {
+				j = s.x
+			}
+			for j <= s.width {
 				termbox.SetCell(j, i, ' ', termbox.ColorDefault, termbox.ColorDefault)
+				j++
 			}
 		}
 	case ansi.EraseInLine:
