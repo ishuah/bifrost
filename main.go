@@ -47,17 +47,17 @@ func main() {
 		return
 	}
 
-	err := termbox.Init()
+	connect, err := NewConnection(portPath, baud)
+	if err != nil {
+		log.Fatalf("FatalError: %v", err)
+	}
+
+	err = termbox.Init()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	defer termbox.Close()
-
-	connect, err := NewConnection(portPath, baud)
-	if err != nil {
-		log.Fatalf("FatalError: %v", err)
-	}
 
 	screen := NewScreen()
 	// Welcome message
