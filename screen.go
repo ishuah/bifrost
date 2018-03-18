@@ -1,4 +1,4 @@
-package screen
+package main
 
 import (
 	"github.com/ishuah/ansi"
@@ -175,4 +175,13 @@ func (s *Screen) Write(line string) {
 		s.write(line)
 	}
 	termbox.SetCursor(s.x, s.y)
+}
+
+func (s *Screen) BufferedWriter(screenChan chan []byte) {
+	for {
+		select {
+		case response := <-screenChan:
+			s.Write(string(response))
+		}
+	}
 }
