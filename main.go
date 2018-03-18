@@ -1,15 +1,11 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"log"
-	"time"
 
-	"github.com/ishuah/bifrost/screen"
 	"github.com/nsf/termbox-go"
-	"github.com/tarm/serial"
 )
 
 const version = "v0.1.20-rc1"
@@ -37,24 +33,6 @@ Press Ctrl+\ to exit
 		`, header, portPath, baud)
 }
 
-func bufferedReader(portReader *bufio.Reader, buf chan []byte) {
-	for {
-		response, _ := portReader.ReadBytes('\n')
-		if len(response) > 0 {
-			buf <- response
-		}
-	}
-}
-
-func bufferedWriter(screen screen.Screen, buf chan []byte) {
-	for {
-		select {
-		case response := <-buf:
-			screen.Write(string(response))
-		}
-	}
-}
-
 func main() {
 	var portPath string
 	var baud int
@@ -76,23 +54,18 @@ func main() {
 
 	defer termbox.Close()
 
-	screen := screen.NewScreen()
-
-	c := &serial.Config{Name: portPath, Baud: baud, ReadTimeout: time.Nanosecond}
-	port, err := serial.OpenPort(c)
-
+	connect, err := NewConnection(portPath, baud)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("FatalError: %v", err)
 	}
 
-	portReader := bufio.NewReader(port)
-
+	screen := NewScreen()
 	// Welcome message
 	screen.Write(welcomeMessage(portPath, baud))
 
-	buf := make(chan []byte)
-	go bufferedReader(portReader, buf)
-	go bufferedWriter(screen, buf)
+	screenChan := make(chan []byte)
+	go connect.Start(screenChan)
+	go screen.BufferedWriter(screenChan)
 
 	for {
 		ev := termbox.PollEvent()
@@ -103,31 +76,31 @@ func main() {
 				if ev.Key == termbox.KeySpace {
 					char = ' '
 				}
-				port.Write([]byte(string(char)))
+				connect.Write([]byte(string(char)))
 			} else {
 				switch ev.Key {
 				case termbox.KeyEsc:
-					port.Write([]byte{'\x1b'})
+					connect.Write([]byte{'\x1b'})
 				case termbox.KeyCtrlBackslash:
 					return
 				case termbox.KeyTab:
-					port.Write([]byte{'\x09'})
+					connect.Write([]byte{'\x09'})
 				case termbox.KeyCtrlC:
-					port.Write([]byte{'\x03'})
+					connect.Write([]byte{'\x03'})
 				case termbox.KeyEnter:
-					port.Write([]byte{'\r'})
+					connect.Write([]byte{'\r'})
 				case termbox.KeyBackspace:
-					port.Write([]byte{'\x7F'})
+					connect.Write([]byte{'\x7F'})
 				case termbox.KeyBackspace2:
-					port.Write([]byte{'\x7F'})
+					connect.Write([]byte{'\x7F'})
 				case termbox.KeyArrowLeft:
-					port.Write([]byte{'\x1b', '[', 'D'})
+					connect.Write([]byte{'\x1b', '[', 'D'})
 				case termbox.KeyArrowRight:
-					port.Write([]byte{'\x1b', '[', 'C'})
+					connect.Write([]byte{'\x1b', '[', 'C'})
 				case termbox.KeyArrowUp:
-					port.Write([]byte{'\x1b', '[', 'A'})
+					connect.Write([]byte{'\x1b', '[', 'A'})
 				case termbox.KeyArrowDown:
-					port.Write([]byte{'\x1b', '[', 'B'})
+					connect.Write([]byte{'\x1b', '[', 'B'})
 				}
 			}
 		}
