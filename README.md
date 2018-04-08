@@ -41,3 +41,4 @@ bifrost -port-path="/dev/ttyUSB0" -baud=128000
 On Linux the serial port adapter path is /dev/ttyUSB0, /dev/ttyUSB1 and so on. Some USB serial port adapters may appear as /dev/ttyACM0.
 
 On OSX/MacOS the serial port adapter path is /dev/tty.usbserial.
+The default baud rate 115200 works for most serial connection but you may want to confirm the optimal baud rate for the device you're connecting to.
