@@ -33,9 +33,10 @@ Bifrost takes `-port-path` and `-baud` as parameters. By default `-port-path` is
 and `-baud` is set to 115200.
 
 Example usage:
-    ```
-    bifrost -port-path="/dev/ttyUSB0" -baud=115200
-    ```
+
+```
+bifrost -port-path="/dev/ttyUSB0" -baud=115200
+```
 
 On Linux the serial port adapter path is /dev/ttyUSB0, /dev/ttyUSB1 and so on. Some USB serial port adapters may appear as /dev/ttyACM0.
 
