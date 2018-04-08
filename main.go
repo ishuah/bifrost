@@ -49,7 +49,8 @@ func main() {
 
 	connect, err := NewConnection(portPath, baud)
 	if err != nil {
-		log.Fatalf("FatalError: %v", err)
+		log.Printf("FatalError: %v", err)
+		return
 	}
 
 	err = termbox.Init()

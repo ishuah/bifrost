@@ -17,7 +17,7 @@ sudo cp bifrost /usr/bin/
 sudo chown root:root /usr/bin/bifrost
 sudo chmod 755 /usr/bin/bifrost
 ```
-On OSX:
+On OSX/MacOS:
 - Unzip and copy binary to `/usr/local/bin/`
 ```
 sudo mkdir -p /usr/local/bin
@@ -27,3 +27,16 @@ sudo cp bifrost /usr/local/bin/
 ```
 
 - Run `bifrost -help` to confirm bifrost was installed correctly.
+
+## Usage
+Bifrost takes `-port-path` and `-baud` as parameters. By default `-port-path` is set to `/dev/tty.usbserial`
+and `-baud` is set to 115200.
+
+Example usage:
+    ```
+    bifrost -port-path="/dev/ttyUSB0" -baud=115200
+    ```
+
+On Linux the serial port adapter path is /dev/ttyUSB0, /dev/ttyUSB1 and so on. Some USB serial port adapters may appear as /dev/ttyACM0.
+
+On OSX/MacOS the serial port adapter path is /dev/tty.usbserial.
