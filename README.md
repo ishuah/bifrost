@@ -1,7 +1,7 @@
 # 🌈 bifrost
 [![Go Report Card](https://goreportcard.com/badge/github.com/ishuah/bifrost)](https://goreportcard.com/report/github.com/ishuah/bifrost)
 
-Bifrost is a tiny terminal emulator for serial port communication.
+Bifrost is a tiny terminal emulator for serial port communication. Supports USB type-C out of the box (2016+ Macbook friendly).
 
 Note: Only Linux and OSX are currenly supported. Windows will be supported in subsequent releases.
 
