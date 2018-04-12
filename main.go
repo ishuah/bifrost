@@ -8,7 +8,7 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
-const version = "v0.1.20-rc1"
+const version = "v0.1.21-rc1"
 
 var header = fmt.Sprintf("\nBifrost %s\n", version)
 var helpText = fmt.Sprintf(`%s
