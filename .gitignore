@@ -19,3 +19,5 @@
 *.code-*
 bifrost
 *.log
+
+.DS_Store

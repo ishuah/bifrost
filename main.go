@@ -104,6 +104,8 @@ func main() {
 					connect.Write([]byte{'\x1b', '[', 'B'})
 				}
 			}
+		case termbox.EventResize:
+			screen.Resize(ev.Width, ev.Height)
 		}
 	}
 }

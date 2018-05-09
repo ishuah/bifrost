@@ -63,6 +63,13 @@ func (s *Screen) write(line string) {
 	}
 }
 
+func (s *Screen) writeLines(lines []string) {
+	for _, line := range lines {
+		s.write(line)
+	}
+	termbox.SetCursor(s.x, s.y)
+}
+
 func (s *Screen) eraseHandler(command byte, params []int) {
 	switch command {
 	case ansi.EraseInDisplay:
@@ -165,16 +172,9 @@ func (s *Screen) Write(line string) {
 	lines := []string{line}
 
 	if s.y > s.height {
-		s.x = 0
-		s.y = 0
-		scope := (len(s.buffer) - s.height) + 1
-		lines = s.buffer[scope:]
-		termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
+		lines = s.reset()
 	}
-	for _, line := range lines {
-		s.write(line)
-	}
-	termbox.SetCursor(s.x, s.y)
+	s.writeLines(lines)
 }
 
 func (s *Screen) BufferedWriter(screenChan chan []byte) {
@@ -184,4 +184,23 @@ func (s *Screen) BufferedWriter(screenChan chan []byte) {
 			s.Write(string(response))
 		}
 	}
+}
+
+func (s *Screen) Resize(width, height int) {
+	defer termbox.Flush()
+	s.width, s.height = width, height
+	lines := s.reset()
+	s.writeLines(lines)
+}
+
+func (s *Screen) reset() []string {
+	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
+	s.x = 0
+	s.y = 0
+	lines := s.buffer
+	if len(s.buffer) > s.height {
+		scope := (len(s.buffer) - s.height) + 1
+		lines = s.buffer[scope:]
+	}
+	return lines
 }
