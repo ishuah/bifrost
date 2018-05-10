@@ -14,6 +14,7 @@ type Screen struct {
 
 func NewScreen() Screen {
 	width, height := termbox.Size()
+	height--
 	return Screen{width: width, height: height, fg: termbox.ColorDefault}
 }
 
@@ -189,6 +190,7 @@ func (s *Screen) BufferedWriter(screenChan chan []byte) {
 func (s *Screen) Resize(width, height int) {
 	defer termbox.Flush()
 	s.width, s.height = width, height
+	s.height--
 	lines := s.reset()
 	s.writeLines(lines)
 }
