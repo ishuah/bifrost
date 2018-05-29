@@ -4,8 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-
-	"github.com/nsf/termbox-go"
 )
 
 const version = "v0.1.21-rc1"
@@ -26,7 +24,7 @@ Bifrost is a tiny terminal emulator for serial port communication.
 func welcomeMessage(portPath string, baud int) string {
 	return fmt.Sprintf(`%s
 Options:
-    Port:		%s
+    Port:	%s
     Baud rate:	%d
 
 Press Ctrl+\ to exit
@@ -52,60 +50,44 @@ func main() {
 		log.Printf("FatalError: %v", err)
 		return
 	}
-
-	err = termbox.Init()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer termbox.Close()
-
-	screen := NewScreen()
 	// Welcome message
-	screen.Write(welcomeMessage(portPath, baud))
+	fmt.Print(welcomeMessage(portPath, baud))
 
-	screenChan := make(chan []byte)
-	go connect.Start(screenChan)
-	go screen.BufferedWriter(screenChan)
+	go connect.Start()
 
 	for {
-		ev := termbox.PollEvent()
-		switch ev.Type {
-		case termbox.EventKey:
-			if ev.Ch != 0 || ev.Key == termbox.KeySpace {
-				char := ev.Ch
-				if ev.Key == termbox.KeySpace {
-					char = ' '
-				}
-				connect.Write([]byte(string(char)))
-			} else {
-				switch ev.Key {
-				case termbox.KeyEsc:
-					connect.Write([]byte{'\x1b'})
-				case termbox.KeyCtrlBackslash:
-					return
-				case termbox.KeyTab:
-					connect.Write([]byte{'\x09'})
-				case termbox.KeyCtrlC:
-					connect.Write([]byte{'\x03'})
-				case termbox.KeyEnter:
-					connect.Write([]byte{'\r'})
-				case termbox.KeyBackspace:
-					connect.Write([]byte{'\x7F'})
-				case termbox.KeyBackspace2:
-					connect.Write([]byte{'\x7F'})
-				case termbox.KeyArrowLeft:
-					connect.Write([]byte{'\x1b', '[', 'D'})
-				case termbox.KeyArrowRight:
-					connect.Write([]byte{'\x1b', '[', 'C'})
-				case termbox.KeyArrowUp:
-					connect.Write([]byte{'\x1b', '[', 'A'})
-				case termbox.KeyArrowDown:
-					connect.Write([]byte{'\x1b', '[', 'B'})
-				}
+		key := pollKeyEvents()
+
+		if key.Value != "" {
+			connect.Write([]byte(key.Value))
+		} else {
+			switch key.Type {
+			case Esc:
+				connect.Write([]byte{'\x1b'})
+			case CtrlBackslash:
+				fmt.Print("bye!")
+				return
+			case Tab:
+				connect.Write([]byte{'\x09'})
+			case CtrlC:
+				connect.Write([]byte{'\x03'})
+			case Enter:
+				connect.Write([]byte{'\r'})
+			case Backspace:
+				connect.Write([]byte{'\x7F'})
+			case Backspace2:
+				connect.Write([]byte{'\x7F'})
+			case LeftArrow:
+				connect.Write([]byte{'\x1b', '[', 'D'})
+			case RightArrow:
+				connect.Write([]byte{'\x1b', '[', 'C'})
+			case UpArrow:
+				connect.Write([]byte{'\x1b', '[', 'A'})
+			case DownArrow:
+				connect.Write([]byte{'\x1b', '[', 'B'})
+			case Space:
+				connect.Write([]byte{' '})
 			}
-		case termbox.EventResize:
-			screen.Resize(ev.Width, ev.Height)
 		}
 	}
 }

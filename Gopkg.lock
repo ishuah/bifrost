@@ -3,21 +3,9 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/ishuah/ansi"
-  packages = ["."]
-  revision = "2db28c9ace5104a4e9ad151099de6452c96832e5"
-
-[[projects]]
-  name = "github.com/mattn/go-runewidth"
-  packages = ["."]
-  revision = "9e777a8366cce605130a531d2cd6363d07ad7317"
-  version = "v0.0.2"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/nsf/termbox-go"
-  packages = ["."]
-  revision = "88b7b944be8bc8d8ec6195fca97c5869ba20f99d"
+  name = "github.com/pkg/term"
+  packages = [".","termios"]
+  revision = "cda20d4ac917ad418d86e151eff439648b06185b"
 
 [[projects]]
   branch = "master"
@@ -34,6 +22,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "950d2c8438b0235ee23a70c07b2dbf4c1a9dc14ca704cc8a282244aa165d3771"
+  inputs-digest = "7d93acc6badf247ec7e71caeedd967151bafbf1e1f81c82d95bffaa3217940e6"
   solver-name = "gps-cdcl"
   solver-version = 1
