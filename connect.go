@@ -29,17 +29,17 @@ func NewConnection(portPath string, baudRate int) (*Connect, error) {
 		stateChan:  stateChan}, nil
 }
 
-func (c *Connect) Start(screenChan chan []byte) {
-	go c.read(screenChan)
+func (c *Connect) Start() {
+	go c.read()
 	for {
 		select {
 		case err := <-c.stateChan:
 			if err != nil {
-				screenChan <- []byte(fmt.Sprintf("\nError connecting to %s", c.config.Name))
+				fmt.Printf("Error connecting to %s", c.config.Name)
 				go c.initialize()
 			} else {
-				screenChan <- []byte(fmt.Sprintf("\nConnection to %s reestablished!", c.config.Name))
-				go c.read(screenChan)
+				fmt.Printf(" | Connection to %s reestablished!", c.config.Name)
+				go c.read()
 			}
 		}
 	}
@@ -60,7 +60,7 @@ func (c *Connect) initialize() {
 	}
 }
 
-func (c *Connect) read(screenChan chan []byte) {
+func (c *Connect) read() {
 	for {
 		response, err := c.portReader.ReadBytes('\n')
 		// report the error
@@ -69,7 +69,7 @@ func (c *Connect) read(screenChan chan []byte) {
 			return
 		}
 		if len(response) > 0 {
-			screenChan <- response
+			fmt.Print(string(response))
 		}
 	}
 }
