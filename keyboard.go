@@ -74,6 +74,4 @@ func pollKeyEvents() Key {
 	default:
 		return Key{Value: string(buff[0:size])}
 	}
-
-	//return hex.EncodeToString(buff[0:size])
 }
