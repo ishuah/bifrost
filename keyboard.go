@@ -9,7 +9,7 @@ import (
 type KeyType uint16
 
 type Key struct {
-	Value string
+	Value []byte
 	Type  KeyType
 }
 
@@ -34,7 +34,7 @@ const (
 func pollKeyEvents() Key {
 	t, _ := term.Open("/dev/tty")
 	term.RawMode(t)
-	buff := make([]byte, 3)
+	buff := make([]byte, 2048)
 	size, err := t.Read(buff)
 	t.Restore()
 	t.Close()
@@ -72,6 +72,6 @@ func pollKeyEvents() Key {
 	case bytes.Equal(buff[0:size], []byte{27, 91, 68}):
 		return Key{Type: LeftArrow}
 	default:
-		return Key{Value: string(buff[0:size])}
+		return Key{Value: buff[0:size]}
 	}
 }

@@ -58,8 +58,8 @@ func main() {
 	for {
 		key := pollKeyEvents()
 
-		if key.Value != "" {
-			connect.Write([]byte(key.Value))
+		if len(key.Value) != 0 {
+			connect.Write(key.Value)
 		} else {
 			switch key.Type {
 			case Esc:
