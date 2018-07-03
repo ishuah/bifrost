@@ -32,7 +32,11 @@ const (
 )
 
 func pollKeyEvents() Key {
-	t, _ := term.Open("/dev/tty")
+	t, err := term.Open("/dev/tty")
+	if err != nil {
+		return Key{}
+	}
+
 	term.RawMode(t)
 	buff := make([]byte, 2048)
 	size, err := t.Read(buff)
