@@ -18,14 +18,14 @@ type Connect struct {
 }
 
 func NewConnection(portPath string, baudRate int) (*Connect, error) {
-	config := &serial.Config{Name: portPath, Baud: baudRate, ReadTimeout: time.Nanosecond}
-	port, err := serial.OpenPort(config)
+	config := serial.Config{Name: portPath, Baud: baudRate, ReadTimeout: time.Nanosecond}
+	port, err := serial.OpenPort(&config)
 	if err != nil {
 		return nil, err
 	}
 	portReader := bufio.NewReader(port)
 	stateChan := make(chan error)
-	return &Connect{config: config, port: port,
+	return &Connect{config: &config, port: port,
 		portReader: portReader,
 		stateChan:  stateChan}, nil
 }
