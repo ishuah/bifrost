@@ -1,5 +1,6 @@
 # 🌈 bifrost
 [![Go Report Card](https://goreportcard.com/badge/github.com/ishuah/bifrost)](https://goreportcard.com/report/github.com/ishuah/bifrost)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fishuah%2Fbifrost.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fishuah%2Fbifrost?ref=badge_shield)
 
 Bifrost is a tiny terminal emulator for serial port communication. Supports USB type-C out of the box (2016+ Macbook friendly).
 
@@ -43,3 +44,7 @@ On Linux the serial port adapter path is /dev/ttyUSB0, /dev/ttyUSB1 and so on. S
 On OSX/MacOS the serial port adapter path is /dev/tty.usbserial.
 
 The default baud rate 115200 works for most serial connection but you may want to confirm the optimal baud rate for the device you're connecting to.
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fishuah%2Fbifrost.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fishuah%2Fbifrost?ref=badge_large)
