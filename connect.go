@@ -9,6 +9,8 @@ import (
 	"github.com/tarm/serial"
 )
 
+// Connect contains all the configuration necessary
+// to open a serial port
 type Connect struct {
 	config     *serial.Config
 	port       *serial.Port
@@ -17,6 +19,7 @@ type Connect struct {
 	stateChan  chan error
 }
 
+// NewConnection returns a pointer to a Connect instance
 func NewConnection(portPath string, baudRate int) (*Connect, error) {
 	config := serial.Config{Name: portPath, Baud: baudRate, ReadTimeout: time.Nanosecond}
 	port, err := serial.OpenPort(&config)
@@ -30,6 +33,8 @@ func NewConnection(portPath string, baudRate int) (*Connect, error) {
 		stateChan:  stateChan}, nil
 }
 
+// Start initializes a read loop that attempts to reconnect
+// when the connection is broken
 func (c *Connect) Start() {
 	go c.read()
 	for {
