@@ -6,8 +6,10 @@ import (
 	"github.com/pkg/term"
 )
 
+// KeyType describes a key
 type KeyType uint16
 
+// Key holds the input value from terminal stream
 type Key struct {
 	Value []byte
 	Type  KeyType
