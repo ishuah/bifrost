@@ -11,6 +11,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:674331ff37ded2dabf38ae134a5bc98ffbe62932e9baaebad137eb86642da1ed"
+  name = "github.com/micmonay/keybd_event"
+  packages = ["."]
+  pruneopts = ""
+  revision = "202c5b2c8150403d3ae263d56d8fdd929c46d77e"
+
+[[projects]]
+  branch = "master"
   digest = "1:15a82aa7b6d0ece3485c64609d75cf86b756313acccf27da29a61a0533d72c65"
   name = "github.com/pkg/term"
   packages = [
@@ -59,7 +67,9 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/micmonay/keybd_event",
     "github.com/pkg/term",
+    "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/require",
     "github.com/tarm/serial",
   ]
