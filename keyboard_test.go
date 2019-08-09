@@ -23,6 +23,8 @@ func TestPollKeyEvents(t *testing.T) {
 		Tab:   TestKey{keybd_event.VK_TAB, false},
 		CtrlA: TestKey{keybd_event.VK_A, true},
 		CtrlB: TestKey{keybd_event.VK_B, true},
+		// Commented out these two tests because simulating
+		// these keys stop the `go test` process
 		//CtrlC:      TestKey{keybd_event.VK_C, true},
 		//CtrlBackslash: TestKey{keybd_event.VK_BACKSLASH, true},
 		Space:      TestKey{keybd_event.VK_SPACE, false},
