@@ -5,7 +5,7 @@ OUTPUT := "build/bifrost-$(VERSION)-{{.OS}}-{{.Arch}}/bifrost"
 
 test:
 	@socat pty,link=/tmp/bifrostmaster,echo=0,crnl pty,link=/tmp/bifrostslave,echo=0,crnl & echo "$$!" > "socat.pid"
-	go test
+	go test -v
 	@if [ -a socat.pid ]; then \
 		kill -TERM $$(cat socat.pid) || true; \
 	fi
@@ -13,7 +13,7 @@ test:
 
 test_coverage:
 	@socat pty,link=/tmp/bifrostmaster,echo=0,crnl pty,link=/tmp/bifrostslave,echo=0,crnl & echo "$$!" > "socat.pid"
-	go test -coverprofile=cover.out && go tool cover -html=cover.out
+	go test -v -coverprofile=cover.out && go tool cover -html=cover.out
 	@if [ -a socat.pid ]; then \
 		kill -TERM $$(cat socat.pid) || true; \
 	fi
