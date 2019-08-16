@@ -1,7 +1,11 @@
 package main
 
 import (
+	"fmt"
+	"os"
+	"os/signal"
 	"runtime"
+	"syscall"
 	"testing"
 	"time"
 
@@ -25,7 +29,7 @@ func TestPollKeyEvents(t *testing.T) {
 		CtrlB: TestKey{keybd_event.VK_B, true},
 		// Commented out these two tests because simulating
 		// these keys stop the `go test` process
-		//CtrlC:      TestKey{keybd_event.VK_C, true},
+		//CtrlC:         TestKey{keybd_event.VK_C, true},
 		//CtrlBackslash: TestKey{keybd_event.VK_BACKSLASH, true},
 		Space:      TestKey{keybd_event.VK_SPACE, false},
 		UpArrow:    TestKey{keybd_event.VK_UP, false},
@@ -34,6 +38,7 @@ func TestPollKeyEvents(t *testing.T) {
 		RightArrow: TestKey{keybd_event.VK_RIGHT, false},
 	}
 	kb, err := keybd_event.NewKeyBonding()
+	//var capturedSignal os.Signal
 	if err != nil {
 		t.Skipf("Could not run KeyBonding: %v", err)
 	}
@@ -53,11 +58,38 @@ func TestPollKeyEvents(t *testing.T) {
 		kb.SetKeys(v.Key)
 		kb.HasCTRL(v.CtrlEnabled)
 
+		if k == CtrlBackslash || k == CtrlC {
+			interruptChan := make(chan os.Signal, 1)
+			signal.Notify(interruptChan, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
+			go func() {
+				for sig := range interruptChan {
+					fmt.Println("signal --> " + sig.String())
+					//capturedSignal = sig
+					//return
+				}
+			}()
+		}
+
 		err = kb.Launching()
 		require.NoError(t, err)
 
+		// if k == CtrlBackslash {
+		// 	fmt.Println("signal -----> " + capturedSignal.String())
+		// 	assert.Equal(t, "quit", capturedSignal.String())
+		// } else if k == CtrlC {
+		// 	fmt.Println("signal -----> " + capturedSignal.String())
+		// 	assert.Equal(t, "interrupt", capturedSignal.String())
+		// } else {
+		// 	key = pollKeyEvents()
+		// 	assert.Equal(t, k, key.Type)
+		// }
+
 		key = pollKeyEvents()
+		if k == Enter {
+			fmt.Println("Enter")
+			fmt.Println(k)
+			fmt.Println(k == key.Type)
+		}
 		assert.Equal(t, k, key.Type)
 	}
-
 }

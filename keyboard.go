@@ -17,7 +17,7 @@ type Key struct {
 
 // Key constants
 const (
-	Enter KeyType = iota
+	Enter KeyType = iota + 1
 	Esc
 	Space
 	Tab
@@ -49,7 +49,7 @@ func pollKeyEvents() Key {
 	}
 
 	switch {
-	case bytes.Equal(buff[0:size], []byte{13}):
+	case bytes.Equal(buff[0:size], []byte{13}) || bytes.Equal(buff[0:size], []byte{10}):
 		return Key{Type: Enter}
 	case bytes.Equal(buff[0:size], []byte{27}):
 		return Key{Type: Esc}

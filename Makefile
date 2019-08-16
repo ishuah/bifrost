@@ -8,8 +8,9 @@ test:
 	go test -v
 	@if [ -a socat.pid ]; then \
 		kill -TERM $$(cat socat.pid) || true; \
+		rm socat.pid || true; \
 	fi
-	@rm socat.pid
+
 
 test_coverage:
 	@socat pty,link=/tmp/bifrostmaster,echo=0,crnl pty,link=/tmp/bifrostslave,echo=0,crnl & echo "$$!" > "socat.pid"
