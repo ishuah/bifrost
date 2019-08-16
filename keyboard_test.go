@@ -85,11 +85,6 @@ func TestPollKeyEvents(t *testing.T) {
 		// }
 
 		key = pollKeyEvents()
-		if k == Enter {
-			fmt.Println("Enter")
-			fmt.Println(k)
-			fmt.Println(k == key.Type)
-		}
 		assert.Equal(t, k, key.Type)
 	}
 }
