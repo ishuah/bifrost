@@ -75,11 +75,7 @@ func TestPollKeyEvents(t *testing.T) {
 
 	// Test Backspace signal interrupt
 	fmt.Println("Press Backspace to proceed...")
-	if runtime.GOOS == "darwin" {
-		key = pollKeyEvents()
-		assert.Equal(t, Backspace2, key.Type)
-	} else {
-		key = pollKeyEvents()
-		assert.Equal(t, Backspace, key.Type)
-	}
+	key = pollKeyEvents()
+	assert.Equal(t, Backspace, key.Type)
+
 }
