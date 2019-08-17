@@ -56,10 +56,6 @@ func TestPollKeyEvents(t *testing.T) {
 		require.NoError(t, err)
 
 		key = pollKeyEvents()
-
-		if k == CtrlC || k == CtrlBackslash {
-			time.Sleep(1 * time.Second)
-		}
 		assert.Equal(t, k, key.Type)
 	}
 
