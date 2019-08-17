@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-const version = "v0.2.0"
+const version = "v0.2.1"
 
 var header = fmt.Sprintf("\nBifrost %s\n", version)
 var helpText = fmt.Sprintf(`%s
