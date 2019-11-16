@@ -2,76 +2,50 @@
 
 
 [[projects]]
-  digest = "1:0deddd908b6b4b768cfc272c16ee61e7088a60f7fe2f06c547bd3d8e1f8b8e77"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
-  pruneopts = ""
   revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
   version = "v1.1.1"
 
 [[projects]]
   branch = "master"
-  digest = "1:674331ff37ded2dabf38ae134a5bc98ffbe62932e9baaebad137eb86642da1ed"
   name = "github.com/micmonay/keybd_event"
   packages = ["."]
-  pruneopts = ""
   revision = "202c5b2c8150403d3ae263d56d8fdd929c46d77e"
 
 [[projects]]
   branch = "master"
-  digest = "1:15a82aa7b6d0ece3485c64609d75cf86b756313acccf27da29a61a0533d72c65"
   name = "github.com/pkg/term"
-  packages = [
-    ".",
-    "termios",
-  ]
-  pruneopts = ""
+  packages = [".","termios"]
   revision = "cda20d4ac917ad418d86e151eff439648b06185b"
 
 [[projects]]
-  digest = "1:256484dbbcd271f9ecebc6795b2df8cad4c458dd0f5fd82a8c2fa0c29f233411"
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
-  pruneopts = ""
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:381bcbeb112a51493d9d998bbba207a529c73dbb49b3fd789e48c63fac1f192c"
   name = "github.com/stretchr/testify"
-  packages = [
-    "assert",
-    "require",
-  ]
-  pruneopts = ""
+  packages = ["assert","require"]
   revision = "ffdc059bfe9ce6a4e144ba849dbedead332c6053"
   version = "v1.3.0"
 
 [[projects]]
   branch = "master"
-  digest = "1:54f00349c493a13c9340be00aebfe75c1cf7c58f2ed2d1ed5d1952105c925992"
   name = "github.com/tarm/serial"
   packages = ["."]
-  pruneopts = ""
   revision = "eaafced92e9619f03c72527efeab21e326f3bc36"
 
 [[projects]]
   branch = "master"
-  digest = "1:407b5f905024dd94ee08c1777fabb380fb3d380f92a7f7df2592be005337eeb3"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  pruneopts = ""
   revision = "37707fdb30a5b38865cfb95e5aab41707daec7fd"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = [
-    "github.com/micmonay/keybd_event",
-    "github.com/pkg/term",
-    "github.com/stretchr/testify/assert",
-    "github.com/stretchr/testify/require",
-    "github.com/tarm/serial",
-  ]
+  inputs-digest = "1f75485c87985031fcc136a397425a4775c8f84652c610a443868ac81e3eed87"
   solver-name = "gps-cdcl"
   solver-version = 1
