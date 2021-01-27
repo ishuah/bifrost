@@ -47,14 +47,14 @@ func TestPollKeyEvents(t *testing.T) {
 	err = kb.Launching()
 	require.NoError(t, err)
 
-	var test_output []byte
+	var testOutput []byte
 
 	for i := 0; i < 7; i++ {
 		key := pollKeyEvents()
-		test_output = append(test_output, key.Value...)
+		testOutput = append(testOutput, key.Value...)
 	}
 
-	assert.Equal(t, []byte("bifrost"), test_output)
+	assert.Equal(t, []byte("bifrost"), testOutput)
 
 	for k, v := range testKeys {
 		kb.SetKeys(v.Key)
