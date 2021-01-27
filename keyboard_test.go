@@ -41,12 +41,20 @@ func TestPollKeyEvents(t *testing.T) {
 		time.Sleep(2 * time.Second)
 	}
 
-	kb.SetKeys(keybd_event.VK_A, keybd_event.VK_B)
+	kb.SetKeys(keybd_event.VK_B, keybd_event.VK_I, keybd_event.VK_F,
+		keybd_event.VK_R, keybd_event.VK_O,
+		keybd_event.VK_S, keybd_event.VK_T)
 	err = kb.Launching()
 	require.NoError(t, err)
 
-	key := pollKeyEvents()
-	assert.Equal(t, []byte("ab"), key.Value)
+	var test_output []byte
+
+	for i := 0; i < 7; i++ {
+		key := pollKeyEvents()
+		test_output = append(test_output, key.Value...)
+	}
+
+	assert.Equal(t, []byte("bifrost"), test_output)
 
 	for k, v := range testKeys {
 		kb.SetKeys(v.Key)
@@ -55,13 +63,13 @@ func TestPollKeyEvents(t *testing.T) {
 		err = kb.Launching()
 		require.NoError(t, err)
 
-		key = pollKeyEvents()
+		key := pollKeyEvents()
 		assert.Equal(t, k, key.Type)
 	}
 
 	// Test CtrlC signal interrupt
 	fmt.Println("\n\nPress CtrlC to proceed...")
-	key = pollKeyEvents()
+	key := pollKeyEvents()
 	assert.Equal(t, CtrlC, key.Type)
 
 	// Test CtrlBackslash signal interrupt
