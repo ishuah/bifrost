@@ -75,6 +75,8 @@ func main() {
 				connect.Write([]byte{'\r'})
 			case Backspace:
 				connect.Write([]byte{'\x7F'})
+			case Delete:
+				connect.Write([]byte{'\x1b', '[', '3', '~'})
 			case LeftArrow:
 				connect.Write([]byte{'\x1b', '[', 'D'})
 			case RightArrow:

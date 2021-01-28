@@ -24,6 +24,7 @@ const (
 	CtrlA
 	CtrlB
 	CtrlC
+	Delete
 	CtrlBackslash
 	Backspace
 	UpArrow
@@ -66,6 +67,8 @@ func pollKeyEvents() Key {
 		return Key{Type: CtrlBackslash}
 	case bytes.Equal(buff[0:size], []byte{8}) || bytes.Equal(buff[0:size], []byte{127}):
 		return Key{Type: Backspace}
+	case bytes.Equal(buff[0:size], []byte{27, 91, 51, 126}):
+		return Key{Type: Delete}
 	case bytes.Equal(buff[0:size], []byte{27, 91, 65}):
 		return Key{Type: UpArrow}
 	case bytes.Equal(buff[0:size], []byte{27, 91, 66}):
