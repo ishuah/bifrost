@@ -22,9 +22,10 @@ Bifrost is a tiny terminal emulator for serial port communication.
 	  
     Flags:
       -port-path	Name/path of the serial port
-      -baud			The baud rate to use on the connection
-      -save-config	Save the connection configuration
-      -help			This help message
+      -baud		The baud rate to use on the connection
+      -save-config	Save a connection configuration
+      -load-config	Load a connection configuration
+      -help		This help message
 	`, header)
 
 var configDir = os.Getenv("HOME") + "/.bifrost/"
@@ -101,8 +102,8 @@ func main() {
 
 	flag.StringVar(&portPath, "port-path", "/dev/tty.usbserial", "Name/path of the serial port")
 	flag.IntVar(&baud, "baud", 115200, "The baud rate to use on the connection")
-	flag.BoolVar(&saveConfig, "save-config", false, "Save the connection configuration")
-	flag.StringVar(&loadConfig, "load-config", "", "Load a connection configuration to start a connection")
+	flag.BoolVar(&saveConfig, "save-config", false, "Save a connection configuration")
+	flag.StringVar(&loadConfig, "load-config", "", "Load a connection configuration")
 	flag.BoolVar(&help, "help", false, "A brief help message")
 	flag.Parse()
 
