@@ -11,7 +11,7 @@ import (
 	"gopkg.in/ini.v1"
 )
 
-const version = "v0.2.1"
+const version = "v0.2.2"
 
 var header = fmt.Sprintf("\nBifrost %s\n", version)
 var helpText = fmt.Sprintf(`%s
