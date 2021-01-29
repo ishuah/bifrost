@@ -20,6 +20,10 @@ test_coverage:
 	fi
 	@rm socat.pid
 
+
+# build darwin/amd64 separately when building on Linux
+# use cross compiler xgo
+# xgo --targets=darwin/amd64 github.com/ishuah/bifrost
 build_all:
 	if [ -z $(VERSION) ]; then \
 	  echo "You need to specify a VERSION"; \
@@ -30,6 +34,6 @@ build_all:
 	if [ -d "build/" ]; then \
     	rm -rf build/*; \
 	fi
-	gox -osarch=$(OSARCHES) -cgo -output=$(OUTPUT)
+	gox -osarch=$(OSARCHES) -output=$(OUTPUT) # add -cgo flag when building on MacOS
 	echo "compressing build files"
 	cd build && for d in */; do filepath=$${d%/*}; echo $$filepath; zip "$${filepath##*/}.zip" "$${filepath##*/}/bifrost"; done
