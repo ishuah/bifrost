@@ -10,8 +10,8 @@ import (
 func TestNewConnection(t *testing.T) {
 
 	port0 := "/dev/nonexistentport"
-	port1 := "/tmp/bifrostmaster"
-	port2 := "/tmp/bifrostslave"
+	port1 := "/tmp/bifrostport1"
+	port2 := "/tmp/bifrostport2"
 	testInput := []byte("from Asgard...\n")
 
 	_, err := NewConnection(port0, 115200)
