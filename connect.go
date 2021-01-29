@@ -6,29 +6,42 @@ import (
 	"io"
 	"time"
 
-	"github.com/tarm/serial"
+	//"github.com/tarm/serial"
+	"github.com/pkg/term"
 )
 
 // Connect contains all the configuration necessary
 // to open a serial port
+// type Connect struct {
+// 	config     *serial.Config
+// 	port       *serial.Port
+// 	portReader *bufio.Reader
+// 	portChan   chan []byte
+// 	stateChan  chan error
+// }
+
 type Connect struct {
-	config     *serial.Config
-	port       *serial.Port
+	portPath   string
+	baudRate   int
+	port       *term.Term
 	portReader *bufio.Reader
-	portChan   chan []byte
 	stateChan  chan error
 }
 
 // NewConnection returns a pointer to a Connect instance
 func NewConnection(portPath string, baudRate int) (*Connect, error) {
-	config := serial.Config{Name: portPath, Baud: baudRate, ReadTimeout: time.Nanosecond}
-	port, err := serial.OpenPort(&config)
+	//config := serial.Config{Name: portPath, Baud: baudRate, ReadTimeout: time.Nanosecond}
+	// port, err := serial.OpenPort(&config)
+
+	t := term.Speed(baudRate)
+	port, err := term.Open(portPath, t)
 	if err != nil {
 		return nil, err
 	}
+	port.SetRaw()
 	portReader := bufio.NewReader(port)
 	stateChan := make(chan error)
-	return &Connect{config: &config, port: port,
+	return &Connect{portPath: portPath, baudRate: baudRate, port: port,
 		portReader: portReader,
 		stateChan:  stateChan}, nil
 }
@@ -41,10 +54,10 @@ func (c *Connect) Start() {
 		select {
 		case err := <-c.stateChan:
 			if err != nil {
-				fmt.Printf("Error connecting to %s", c.config.Name)
+				fmt.Printf("Error connecting to %s", c.portPath)
 				go c.initialize()
 			} else {
-				fmt.Printf(" | Connection to %s reestablished!", c.config.Name)
+				fmt.Printf(" | Connection to %s reestablished!", c.portPath)
 				go c.read()
 			}
 		}
@@ -55,7 +68,7 @@ func (c *Connect) initialize() {
 	c.port.Close()
 	for {
 		time.Sleep(time.Second)
-		port, err := serial.OpenPort(c.config)
+		port, err := term.Open(c.portPath)
 		if err != nil {
 			continue
 		}
