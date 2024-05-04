@@ -1,5 +1,7 @@
 SHELL = bash
 OSARCHES := "darwin/amd64 linux/386 linux/amd64 linux/arm linux/arm64 linux/ppc64 linux/ppc64le linux/s390x"
+DARWIN_ARCHES = amd64 arm64
+LINUX_ARCHES = 386 amd64 arm arm64 ppc64 ppc64le s390x
 OUTPUT := "build/bifrost-$(VERSION)-{{.OS}}-{{.Arch}}/bifrost"
 
 
@@ -34,6 +36,16 @@ build_all:
 	if [ -d "build/" ]; then \
     	rm -rf build/*; \
 	fi
-	gox -osarch=$(OSARCHES) -output=$(OUTPUT) # add -cgo flag when building on MacOS
+	# Build Darwin first
+	for arch in $(DARWIN_ARCHES); do \
+		echo $$arch; \
+		GOOS=darwin GOARCH=$$arch go build -o "build/bifrost-$(VERSION)-darwin-$$arch/bifrost"; \
+	done
+
+	# Build Linux
+	for arch in $(LINUX_ARCHES); do \
+		echo $$arch; \
+		GOOS=linux GOARCH=$$arch go build -o "build/bifrost-$(VERSION)-linux-$$arch/bifrost"; \
+	done
 	echo "compressing build files"
 	cd build && for d in */; do filepath=$${d%/*}; echo $$filepath; zip "$${filepath##*/}.zip" "$${filepath##*/}/bifrost"; done
