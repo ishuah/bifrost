@@ -157,7 +157,7 @@ func main() {
 			case Esc:
 				connect.Write([]byte{'\x1b'})
 			case CtrlBackslash:
-				fmt.Print("bye!")
+				fmt.Println("\nbye!")
 				return
 			case Tab:
 				connect.Write([]byte{'\x09'})
