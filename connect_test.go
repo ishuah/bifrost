@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,6 +14,7 @@ func TestNewConnection(t *testing.T) {
 	port1 := "/tmp/bifrostport1"
 	port2 := "/tmp/bifrostport2"
 	testInput := []byte("from Asgard...\n")
+	message1 := make([]byte, len(testInput))
 
 	_, err := NewConnection(port0, 115200)
 	require.Error(t, err)
@@ -24,7 +26,7 @@ func TestNewConnection(t *testing.T) {
 	require.NoError(t, err)
 
 	connect1.Write(testInput)
-	message1, err := connect2.portReader.ReadBytes('\n')
+	_, err = io.ReadFull(connect2.port, message1)
 	require.NoError(t, err)
 	assert.Equal(t, testInput, message1)
 }
