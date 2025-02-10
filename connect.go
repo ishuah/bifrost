@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"io"
 	"time"
@@ -10,11 +9,10 @@ import (
 )
 
 type Connect struct {
-	portPath   string
-	baudRate   int
-	port       *term.Term
-	portReader *bufio.Reader
-	stateChan  chan error
+	portPath  string
+	baudRate  int
+	port      *term.Term
+	stateChan chan error
 }
 
 // NewConnection returns a pointer to a Connect instance
@@ -25,11 +23,9 @@ func NewConnection(portPath string, baudRate int) (*Connect, error) {
 		return nil, err
 	}
 	port.SetRaw()
-	portReader := bufio.NewReader(port)
 	stateChan := make(chan error)
 	return &Connect{portPath: portPath, baudRate: baudRate, port: port,
-		portReader: portReader,
-		stateChan:  stateChan}, nil
+		stateChan: stateChan}, nil
 }
 
 // Start initializes a read loop that attempts to reconnect
@@ -59,22 +55,22 @@ func (c *Connect) initialize() {
 			continue
 		}
 		c.port = port
-		c.portReader = bufio.NewReader(port)
 		c.stateChan <- nil
 		return
 	}
 }
 
 func (c *Connect) read() {
+	buf := make([]byte, 1)
 	for {
-		response, err := c.portReader.ReadBytes('\n')
+		n, err := io.ReadFull(c.port, buf)
 		// report the error
 		if err != nil && err != io.EOF {
 			c.stateChan <- err
 			return
 		}
-		if len(response) > 0 {
-			fmt.Print(string(response))
+		if n > 0 {
+			fmt.Print(string(buf))
 		}
 	}
 }
