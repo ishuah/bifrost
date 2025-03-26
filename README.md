@@ -4,7 +4,7 @@
 
 Bifrost is a tiny terminal emulator for serial port communication. Supports USB type-C out of the box (2016+ Macbook friendly).
 
-Note: Only Linux and OSX are currenly supported. Windows will be supported in subsequent releases.
+Currently supports Linux, MacOS, and Windows.
 
 ## Installation
 - Download the latest version from the releases page (https://github.com/ishuah/bifrost/releases)
@@ -18,13 +18,33 @@ sudo cp bifrost /usr/bin/
 sudo chown root:root /usr/bin/bifrost
 sudo chmod 755 /usr/bin/bifrost
 ```
-On OSX/MacOS:
+On MacOS:
 - Unzip and copy binary to `/usr/local/bin/`
 ```
 sudo mkdir -p /usr/local/bin
 unzip bifrost-<version>-darwin-amd64.zip
 cd bifrost-<version>-darwin-amd64
 sudo cp bifrost /usr/local/bin/
+```
+
+On Windows:
+- Unzip your bindary to a directory of your choice. Example - `C:\Users\ish\utils`
+- On Powershell, create an alias for bifrost
+```
+// If you don't have a Powershell profile, run the following command
+New-Item -Path $profile -Type File -Force
+
+// Open your Powershell profile
+notepad $PROFILE
+
+// Create your new alias
+ New-Alias -Name bifrost -Value C:\Users\ish\utils\bifrost.exe
+
+// Save and close the file. Reload your Powershell profile by running the following command
+. $PROFILE
+
+// You should be able to run bifrost from your Powershell terminal
+bifrost --help
 ```
 
 - Run `bifrost -help` to confirm bifrost was installed correctly.
