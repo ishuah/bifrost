@@ -1,4 +1,4 @@
-//go:build !windows
+//go:build windows
 
 package main
 
@@ -7,24 +7,23 @@ import (
 	"io"
 	"time"
 
-	"github.com/pkg/term"
+	"github.com/tarm/serial"
 )
 
 type Connect struct {
-	portPath  string
-	baudRate  int
-	port      *term.Term
+	portPath string
+	baudRate int
+	port	 *serial.Port
 	stateChan chan error
 }
 
 // NewConnection returns a pointer to a Connect instance
 func NewConnection(portPath string, baudRate int) (*Connect, error) {
-	t := term.Speed(baudRate)
-	port, err := term.Open(portPath, t)
+	c := &serial.Config{Name: portPath, Baud: baudRate}
+	port, err := serial.OpenPort(c)
 	if err != nil {
 		return nil, err
 	}
-	port.SetRaw()
 	stateChan := make(chan error)
 	return &Connect{portPath: portPath, baudRate: baudRate, port: port,
 		stateChan: stateChan}, nil
@@ -35,7 +34,7 @@ func NewConnection(portPath string, baudRate int) (*Connect, error) {
 func (c *Connect) Start() {
 	go c.read()
 	for {
-		select {
+		select{
 		case err := <-c.stateChan:
 			if err != nil {
 				fmt.Printf("Error connecting to %s", c.portPath)
@@ -50,9 +49,10 @@ func (c *Connect) Start() {
 
 func (c *Connect) initialize() {
 	c.port.Close()
+	config := &serial.Config{Name: c.portPath, Baud: c.baudRate}
 	for {
 		time.Sleep(time.Second)
-		port, err := term.Open(c.portPath)
+		port, err := serial.OpenPort(config)
 		if err != nil {
 			continue
 		}
