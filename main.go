@@ -28,8 +28,6 @@ Bifrost is a tiny terminal emulator for serial port communication.
       -help		This help message
 	`, header)
 
-var configDir = os.Getenv("HOME") + "/.bifrost/"
-
 const configFile = "config.ini"
 
 func welcomeMessage(portPath string, baud int) string {
@@ -42,7 +40,7 @@ Press Ctrl+\ to exit
 		`, header, portPath, baud)
 }
 
-func writeConfig(configName string, portPath string, baud int) error {
+func writeConfig(configDir string, configName string, portPath string, baud int) error {
 	configPath := configDir + configFile
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
@@ -74,7 +72,7 @@ func writeConfig(configName string, portPath string, baud int) error {
 	return nil
 }
 
-func readConfig(configName string) (portPath string, baud int, err error) {
+func readConfig(configDir string, configName string) (portPath string, baud int, err error) {
 	configPath := configDir + configFile
 
 	config, err := ini.Load(configPath)
@@ -100,6 +98,9 @@ func main() {
 	var loadConfig string
 	var help bool
 
+	var configDir, _ = os.UserHomeDir()
+	configDir += "/.bifrost/"
+
 	flag.StringVar(&portPath, "port-path", "/dev/tty.usbserial", "Name/path of the serial port")
 	flag.IntVar(&baud, "baud", 115200, "The baud rate to use on the connection")
 	flag.BoolVar(&saveConfig, "save-config", false, "Save a connection configuration")
@@ -111,7 +112,7 @@ func main() {
 		var configName string
 		fmt.Println("What name do you want to save this config under?")
 		fmt.Scanln(&configName)
-		err := writeConfig(configName, portPath, baud)
+		err := writeConfig(configDir, configName, portPath, baud)
 		if err != nil {
 			log.Printf("Failed to save config. FatalError: %v\n", err)
 			return
@@ -122,7 +123,7 @@ func main() {
 
 	if loadConfig != "" {
 		fmt.Printf("Loading config %s...\n", loadConfig)
-		cfgPortPath, cfgBaud, err := readConfig(loadConfig)
+		cfgPortPath, cfgBaud, err := readConfig(configDir, loadConfig)
 		if err != nil {
 			log.Printf("Failed to load config. FatalError: %v\n", err)
 			return
