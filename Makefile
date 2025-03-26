@@ -49,10 +49,15 @@ build_all:
 		GOOS=linux GOARCH=$$arch go build -o "build/bifrost-$(VERSION)-linux-$$arch/bifrost"; \
 	done
 
+	echo "compressing build files for Darwin and Linux"
+	cd build && for d in */; do filepath=$${d%/*}; echo $$filepath; zip "$${filepath##*/}.zip" "$${filepath##*/}/bifrost"; done
+
+	mkdir -p build/windows
+
 	# Build Windows
 	for arch in $(WINDOWS_ARCHES); do \
 		echo $$arch; \
-		GOOS=windows GOARCH=$$arch go build -o "build/bifrost-$(VERSION)-windows-$$arch/bifrost.exe"; \
+		GOOS=windows GOARCH=$$arch go build -o "build/windows/bifrost-$(VERSION)-windows-$$arch/bifrost.exe"; \
 	done
-	echo "compressing build files"
-	cd build && for d in */; do filepath=$${d%/*}; echo $$filepath; zip "$${filepath##*/}.zip" "$${filepath##*/}/bifrost"; done
+	echo "compressing build files for Windows"
+	cd build/windows && for d in */; do filepath=$${d%/*}; echo $$filepath; zip "$${filepath##*/}.zip" "$${filepath##*/}/bifrost.exe"; done
