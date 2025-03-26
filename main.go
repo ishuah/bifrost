@@ -147,39 +147,5 @@ func main() {
 
 	go connect.Start()
 
-	for {
-		key := pollKeyEvents()
-
-		if len(key.Value) != 0 {
-			connect.Write(key.Value)
-		} else {
-			switch key.Type {
-			case Esc:
-				connect.Write([]byte{'\x1b'})
-			case CtrlBackslash:
-				fmt.Println("\nbye!")
-				return
-			case Tab:
-				connect.Write([]byte{'\x09'})
-			case CtrlC:
-				connect.Write([]byte{'\x03'})
-			case Enter:
-				connect.Write([]byte{'\r'})
-			case Backspace:
-				connect.Write([]byte{'\x7F'})
-			case Delete:
-				connect.Write([]byte{'\x1b', '[', '3', '~'})
-			case LeftArrow:
-				connect.Write([]byte{'\x1b', '[', 'D'})
-			case RightArrow:
-				connect.Write([]byte{'\x1b', '[', 'C'})
-			case UpArrow:
-				connect.Write([]byte{'\x1b', '[', 'A'})
-			case DownArrow:
-				connect.Write([]byte{'\x1b', '[', 'B'})
-			case Space:
-				connect.Write([]byte{' '})
-			}
-		}
-	}
+	KeyboardListener(connect)
 }
