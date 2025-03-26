@@ -2,6 +2,7 @@ SHELL = bash
 OSARCHES := "darwin/amd64 linux/386 linux/amd64 linux/arm linux/arm64 linux/ppc64 linux/ppc64le linux/s390x"
 DARWIN_ARCHES = amd64 arm64
 LINUX_ARCHES = 386 amd64 arm arm64 ppc64 ppc64le s390x
+WINDOWS_ARCHES = 386 amd64 arm arm64
 OUTPUT := "build/bifrost-$(VERSION)-{{.OS}}-{{.Arch}}/bifrost"
 
 
@@ -46,6 +47,12 @@ build_all:
 	for arch in $(LINUX_ARCHES); do \
 		echo $$arch; \
 		GOOS=linux GOARCH=$$arch go build -o "build/bifrost-$(VERSION)-linux-$$arch/bifrost"; \
+	done
+
+	# Build Windows
+	for arch in $(WINDOWS_ARCHES); do \
+		echo $$arch; \
+		GOOS=windows GOARCH=$$arch go build -o "build/bifrost-$(VERSION)-windows-$$arch/bifrost.exe"; \
 	done
 	echo "compressing build files"
 	cd build && for d in */; do filepath=$${d%/*}; echo $$filepath; zip "$${filepath##*/}.zip" "$${filepath##*/}/bifrost"; done
