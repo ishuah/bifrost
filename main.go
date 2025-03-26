@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
+	"path/filepath"
 
 	"gopkg.in/ini.v1"
 )
@@ -41,7 +41,7 @@ Press Ctrl+\ to exit
 }
 
 func writeConfig(configDir string, configName string, portPath string, baud int) error {
-	configPath := configDir + configFile
+	configPath := filepath.Join(configDir, configFile)
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		err = os.Mkdir(configDir, os.ModePerm)
@@ -49,7 +49,7 @@ func writeConfig(configDir string, configName string, portPath string, baud int)
 			return err
 		}
 
-		err = ioutil.WriteFile(configPath, []byte(""), os.ModePerm)
+		err = os.WriteFile(configPath, []byte(""), os.ModePerm)
 		if err != nil {
 			return err
 		}
@@ -73,7 +73,7 @@ func writeConfig(configDir string, configName string, portPath string, baud int)
 }
 
 func readConfig(configDir string, configName string) (portPath string, baud int, err error) {
-	configPath := configDir + configFile
+	configPath := filepath.Join(configDir, configFile)
 
 	config, err := ini.Load(configPath)
 	if err != nil {
