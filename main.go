@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 	"path/filepath"
+	"strconv"
 
 	"gopkg.in/ini.v1"
 )

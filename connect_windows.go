@@ -11,9 +11,9 @@ import (
 )
 
 type Connect struct {
-	portPath string
-	baudRate int
-	port	 *serial.Port
+	portPath  string
+	baudRate  int
+	port      *serial.Port
 	stateChan chan error
 }
 
@@ -34,7 +34,7 @@ func NewConnection(portPath string, baudRate int) (*Connect, error) {
 func (c *Connect) Start() {
 	go c.read()
 	for {
-		select{
+		select {
 		case err := <-c.stateChan:
 			if err != nil {
 				fmt.Printf("Error connecting to %s", c.portPath)
