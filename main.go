@@ -114,8 +114,8 @@ func main() {
 		fmt.Scanln(&configName)
 		err := writeConfig(configDir, configName, portPath, baud)
 		if err != nil {
-			log.Printf("Failed to save config. FatalError: %v\n", err)
-			return
+			log.Printf("Failed to save config: %v\n", err)
+			os.Exit(1)
 		}
 		fmt.Printf("Config saved! You can view and edit your configurations at %s%s.\n", configDir, configFile)
 		return
@@ -125,8 +125,8 @@ func main() {
 		fmt.Printf("Loading config %s...\n", loadConfig)
 		cfgPortPath, cfgBaud, err := readConfig(configDir, loadConfig)
 		if err != nil {
-			log.Printf("Failed to load config. FatalError: %v\n", err)
-			return
+			log.Printf("Failed to load config: %v\n", err)
+			os.Exit(1)
 		}
 		portPath = cfgPortPath
 		baud = cfgBaud
@@ -140,8 +140,8 @@ func main() {
 
 	connect, err := NewConnection(portPath, baud)
 	if err != nil {
-		log.Printf("FatalError: %v\n", err)
-		return
+		log.Printf("Failed to connect: %v\n", err)
+		os.Exit(1)
 	}
 	// Welcome message
 	fmt.Print(welcomeMessage(portPath, baud))
