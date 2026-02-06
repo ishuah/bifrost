@@ -44,29 +44,54 @@ func TestPollKeyEvents(t *testing.T) {
 		time.Sleep(2 * time.Second)
 	}
 
-	kb.SetKeys(keybd_event.VK_B, keybd_event.VK_I, keybd_event.VK_F,
+	// Test typing "bifrost" - send each key individually
+	bifrostKeys := []int{
+		keybd_event.VK_B, keybd_event.VK_I, keybd_event.VK_F,
 		keybd_event.VK_R, keybd_event.VK_O,
-		keybd_event.VK_S, keybd_event.VK_T)
-	err = kb.Launching()
-	require.NoError(t, err)
+		keybd_event.VK_S, keybd_event.VK_T,
+	}
 
 	var testOutput []byte
 
-	for i := 0; i < 7; i++ {
-		key := pollKeyEvents()
-		testOutput = append(testOutput, key.Value...)
+	for _, key := range bifrostKeys {
+		// Start reading in background before sending key
+		resultChan := make(chan Key, 1)
+		go func() {
+			resultChan <- pollKeyEvents()
+		}()
+
+		// Small delay to ensure pollKeyEvents is blocking
+		time.Sleep(50 * time.Millisecond)
+
+		// Send the key
+		kb.SetKeys(key)
+		err = kb.Launching()
+		require.NoError(t, err)
+
+		// Wait for the result
+		result := <-resultChan
+		testOutput = append(testOutput, result.Value...)
 	}
 
 	assert.Equal(t, []byte("bifrost"), testOutput)
 
+	// Test special keys
 	for k, v := range testKeys {
+		// Start reading in background
+		resultChan := make(chan Key, 1)
+		go func() {
+			resultChan <- pollKeyEvents()
+		}()
+
+		time.Sleep(50 * time.Millisecond)
+
 		kb.SetKeys(v.Key)
 		kb.HasCTRL(v.CtrlEnabled)
 
 		err = kb.Launching()
 		require.NoError(t, err)
 
-		key := pollKeyEvents()
+		key := <-resultChan
 		assert.Equal(t, k, key.Type)
 	}
 
