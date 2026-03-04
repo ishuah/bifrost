@@ -37,6 +37,20 @@ func KeyboardListener(connect *Connect) {
 			connect.Write([]byte{'\x1b', '[', 'B'})
 		case keys.Space:
 			connect.Write([]byte{' '})
+		case keys.CtrlA:
+			connect.Write([]byte{'\x01'})
+		case keys.CtrlB:
+			connect.Write([]byte{'\x02'})
+		case keys.CtrlD:
+			connect.Write([]byte{'\x04'})
+		case keys.CtrlE:
+			connect.Write([]byte{'\x05'})
+		case keys.CtrlF:
+			connect.Write([]byte{'\x06'})
+		case keys.CtrlK:
+			connect.Write([]byte{'\x0b'})
+		case keys.CtrlU:
+			connect.Write([]byte{'\x15'})
 		case keys.RuneKey:
 			connect.Write([]byte(string(key.Runes)))
 		}

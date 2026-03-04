@@ -34,6 +34,11 @@ const (
 	DownArrow
 	LeftArrow
 	RightArrow
+	CtrlD
+	CtrlE
+	CtrlF
+	CtrlK
+	CtrlU
 )
 
 func pollKeyEvents() Key {
@@ -66,6 +71,16 @@ func pollKeyEvents() Key {
 		return Key{Type: CtrlB}
 	case bytes.Equal(buff[0:size], []byte{3}):
 		return Key{Type: CtrlC}
+	case bytes.Equal(buff[0:size], []byte{4}):
+		return Key{Type: CtrlD}
+	case bytes.Equal(buff[0:size], []byte{5}):
+		return Key{Type: CtrlE}
+	case bytes.Equal(buff[0:size], []byte{6}):
+		return Key{Type: CtrlF}
+	case bytes.Equal(buff[0:size], []byte{11}):
+		return Key{Type: CtrlK}
+	case bytes.Equal(buff[0:size], []byte{21}):
+		return Key{Type: CtrlU}
 	case bytes.Equal(buff[0:size], []byte{28}):
 		return Key{Type: CtrlBackslash}
 	case bytes.Equal(buff[0:size], []byte{8}) || bytes.Equal(buff[0:size], []byte{127}):
@@ -118,6 +133,20 @@ func KeyboardListener(connect *Connect) {
 				connect.Write([]byte{'\x1b', '[', 'B'})
 			case Space:
 				connect.Write([]byte{' '})
+			case CtrlA:
+				connect.Write([]byte{'\x01'})
+			case CtrlB:
+				connect.Write([]byte{'\x02'})
+			case CtrlD:
+				connect.Write([]byte{'\x04'})
+			case CtrlE:
+				connect.Write([]byte{'\x05'})
+			case CtrlF:
+				connect.Write([]byte{'\x06'})
+			case CtrlK:
+				connect.Write([]byte{'\x0b'})
+			case CtrlU:
+				connect.Write([]byte{'\x15'})
 			}
 		}
 	}
