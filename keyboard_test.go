@@ -32,7 +32,7 @@ func TestPollKeyEvents(t *testing.T) {
 		CtrlK:      TestKey{keybd_event.VK_K, true},
 		CtrlU:      TestKey{keybd_event.VK_U, true},
 		Space:      TestKey{keybd_event.VK_SPACE, false},
-		Delete:     TestKey{keybd_event.VK_DELETE, false},
+		Delete:     TestKey{vkForwardDelete, false},
 		UpArrow:    TestKey{keybd_event.VK_UP, false},
 		DownArrow:  TestKey{keybd_event.VK_DOWN, false},
 		LeftArrow:  TestKey{keybd_event.VK_LEFT, false},
