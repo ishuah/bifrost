@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	atomicgo.dev/keyboard v0.2.9
-	github.com/micmonay/keybd_event v0.0.0-20190804163414-202c5b2c8150
+	github.com/micmonay/keybd_event v1.1.2
 	github.com/pkg/term v0.0.0-20180423043932-cda20d4ac917
 	github.com/stretchr/testify v1.7.0
 	github.com/tarm/serial v0.0.0-20180830185346-98f6abe2eb07
