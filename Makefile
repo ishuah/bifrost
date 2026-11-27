@@ -5,23 +5,26 @@ LINUX_ARCHES = 386 amd64 arm arm64 ppc64 ppc64le s390x
 WINDOWS_ARCHES = 386 amd64 arm arm64
 OUTPUT := "build/bifrost-$(VERSION)-{{.OS}}-{{.Arch}}/bifrost"
 
+# Stop the socat started for tests. Run in the same shell as `go test` so it
+# happens even when tests fail.
+STOP_SOCAT = if [ -f socat.pid ]; then kill -TERM $$(cat socat.pid) 2>/dev/null || true; rm -f socat.pid; fi
+
 
 test:
 	@socat pty,link=/tmp/bifrostport1,echo=0,crnl pty,link=/tmp/bifrostport2,echo=0,crnl & echo "$$!" > "socat.pid"
-	go test -v
-	@if [ -a socat.pid ]; then \
-		kill -TERM $$(cat socat.pid) || true; \
-		rm socat.pid || true; \
-	fi
+	@echo "go test -v"; \
+	go test -v; status=$$?; \
+	$(STOP_SOCAT); \
+	exit $$status
 
 
 test_coverage:
 	@socat pty,link=/tmp/bifrostport1,echo=0,crnl pty,link=/tmp/bifrostport2,echo=0,crnl & echo "$$!" > "socat.pid"
-	go test -v -coverprofile=cover.out && go tool cover -html=cover.out
-	@if [ -a socat.pid ]; then \
-		kill -TERM $$(cat socat.pid) || true; \
-	fi
-	@rm socat.pid
+	@echo "go test -v -coverprofile=cover.out"; \
+	go test -v -coverprofile=cover.out; status=$$?; \
+	$(STOP_SOCAT); \
+	if [ $$status -eq 0 ]; then go tool cover -html=cover.out; fi; \
+	exit $$status
 
 
 # build darwin/amd64 separately when building on Linux
